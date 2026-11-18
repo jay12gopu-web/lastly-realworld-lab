@@ -1,0 +1,26 @@
+### Run from IntelliJ's HTTP Client or translate into Postman/curl.
+GET http://localhost:8080/actuator/health
+
+### List sample catalogue
+GET http://localhost:8080/api/products
+
+### Place order (rerun with the SAME key to test retry safety)
+POST http://localhost:8080/api/orders
+Content-Type: application/json
+X-Correlation-ID: learning-demo-001
+
+{
+  "productId": 1,
+  "quantity": 1,
+  "idempotencyKey": "learning-order-001"
+}
+
+### Test: out-of-stock error
+POST http://localhost:8080/api/orders
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "quantity": 50,
+  "idempotencyKey": "oversell-experiment-001"
+}

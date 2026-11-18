@@ -1,0 +1,10 @@
+# Staging writes must be explicitly enabled by configuration outside the file.
+app:
+  events:
+    enabled: false
+  auth:
+    enabled: true
+  jwt:
+    secret: ${JWT_SECRET:local_staging_only_secret_change_before_public_use_987654321}
+  orders:
+    write-enabled: ${ORDERS_WRITE_ENABLED:false}

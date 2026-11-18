@@ -1,0 +1,48 @@
+name: Test and build
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      # Docker service provided by GitHub-hosted Ubuntu runners for Testcontainers.
+      - name: Unit and integration tests against a real MySQL container
+        working-directory: backend
+        run: mvn --batch-mode verify
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # First checkout: run npm install locally and COMMIT the generated package-lock.json.
+      # Then change this step to npm ci --no-audit --no-fund for reproducible builds.
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm install --no-audit --no-fund
+      - name: UI tests
+        working-directory: frontend
+        run: npm test
+      - name: Production frontend build
+        working-directory: frontend
+        run: npm run build
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Backend container image
+        run: docker build -t lastly-backend:ci ./backend
+      - name: Frontend container image
+        run: docker build -t lastly-frontend:ci ./frontend

@@ -1,0 +1,9 @@
+# Public demo is deliberately READ ONLY. Prod startup requires explicit database secrets.
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+app:
+  orders:
+    write-enabled: false

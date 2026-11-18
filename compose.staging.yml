@@ -1,0 +1,39 @@
+# Independent private staging project: docker compose -p lastly-staging -f compose.staging.yml up -d --build
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: root_staging_only
+      MYSQL_DATABASE: lastly
+      MYSQL_USER: lastly
+      MYSQL_PASSWORD: lastly_staging
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent"]
+      interval: 5s
+      timeout: 4s
+      retries: 24
+  backend:
+    build: ./backend
+    environment:
+      SPRING_PROFILES_ACTIVE: staging
+      DB_URL: jdbc:mysql://db:3306/lastly
+      DB_USERNAME: lastly
+      DB_PASSWORD: lastly_staging
+      ORDERS_WRITE_ENABLED: "true"
+    ports:
+      - "127.0.0.1:8081:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+  frontend:
+    build: ./frontend
+    ports:
+      - "127.0.0.1:8086:80"
+    depends_on:
+      - backend
+volumes:
+  mysql_data:

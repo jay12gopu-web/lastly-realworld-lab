@@ -1,0 +1,7 @@
+app:
+  auth:
+    enabled: true
+  jwt:
+    secret: local_test_only_secret_change_before_public_use_123456789
+  orders:
+    write-enabled: true

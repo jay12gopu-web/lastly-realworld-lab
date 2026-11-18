@@ -1,0 +1,10 @@
+# Local development only: write operations enabled for hands-on exercises.
+app:
+  events:
+    enabled: ${KAFKA_EVENTS_ENABLED:true}
+  auth:
+    enabled: true
+  jwt:
+    secret: ${JWT_SECRET:local_dev_only_secret_change_before_public_use_0123456789}
+  orders:
+    write-enabled: true
